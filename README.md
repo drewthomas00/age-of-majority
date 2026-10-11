@@ -131,10 +131,10 @@ As of **2026-10-11** (`AS_OF`). Counts are entries with an answer of their own; 
 
 | Table | Entries | `high` | `medium` |
 |---|---|---|---|
-| `majority` | 121 | 90 | 31 |
+| `majority` | 125 | 90 | 35 |
 | `digitalConsent` | 39 | 31 | 8 |
 
-**Majority** — 47 US states and DC, Puerto Rico; all 13 Canadian provinces and territories; all 8 Australian states and territories; the UK (GB, and GB-ENG, GB-WLS, GB-SCT, GB-NIR); 25 EU states, Iceland, Liechtenstein, Norway and Switzerland; New Zealand, Mexico (federal), Japan, Korea, Taiwan, China, Malaysia, Thailand, the Philippines, Vietnam, India, Türkiye, Egypt, South Africa, Kenya, Brazil, Argentina and Uruguay.
+**Majority** — all 50 US states and DC, Puerto Rico; all 13 Canadian provinces and territories; all 8 Australian states and territories; the UK (GB, and GB-ENG, GB-WLS, GB-SCT, GB-NIR); 25 EU states, Iceland, Liechtenstein, Norway and Switzerland; New Zealand, Mexico (federal), Japan, Korea, Taiwan, China, Malaysia, Thailand, the Philippines, Vietnam, India, Türkiye, Egypt, South Africa, Kenya, Brazil, Argentina and Uruguay.
 
 Not 18:
 
@@ -150,10 +150,10 @@ Not 18:
 
 `null` means one of these, not "probably 18":
 
-- **No linkable citation found in this review** — majority: Indiana, New Jersey, New Mexico, Tennessee, American Samoa, Cyprus, Greece, Macau, Sri Lanka, Israel, Chile, Colombia, Peru, Venezuela, Bolivia, Paraguay, Guatemala, the Dominican Republic, Jamaica, Russia, Ukraine, Belarus, Georgia, Armenia, Serbia; digital consent: Kenya, Nigeria, Vietnam, Peru. Each has a reported age, but nothing in the tables ships without a source a reader can follow. These are the first candidates for a contribution.
+- **No linkable citation found in this review** — majority: American Samoa, Cyprus, Greece, Macau, Sri Lanka, Israel, Chile, Colombia, Peru, Venezuela, Bolivia, Paraguay, Guatemala, the Dominican Republic, Jamaica, Russia, Ukraine, Belarus, Georgia, Armenia, Serbia; digital consent: Kenya, Nigeria, Vietnam, Peru. Each has a reported age, but nothing in the tables ships without a source a reader can follow. These are the first candidates for a contribution.
 - **Not verified** — Guam, the US Virgin Islands and the Northern Mariana Islands; Hong Kong, Nigeria, Ghana, Kuwait, Qatar, Bahrain, Kazakhstan, Moldova, the western Balkans outside the EU, and much of the world not listed above.
 - **No single answer** — Singapore (21 at common law, 18 for contracts), Indonesia (21 in the Civil Code, 18 elsewhere), Pakistan and Bangladesh (18, but 21 under a court-appointed guardian), Thailand's digital-consent rules (split by age band), Ecuador (sources conflict).
-- **Counted in lunar years** — Saudi Arabia; and the UAE before 2026-06-01, when it moves to 18 Gregorian years (not encoded yet: no linkable source).
+- **Counted in lunar years** — Saudi Arabia; and the UAE before 2026-06-01, when it moved to 18 Gregorian years (Federal Decree-Law No. 25 of 2025, art. 84 as reported; not encoded yet, because the official text could not be reached).
 - **No statutory digital-consent age** — Switzerland (the revised data protection act relies on the capacity of judgement, not a fixed age), Canada outside Québec, Australia (a children's online privacy code is in draft), Japan, Singapore, New Zealand, Argentina, Mexico, Türkiye, the Philippines.
 - **Not yet in force, with uncertain dates** — India's Digital Personal Data Protection Act 2023 sets 18, with the children's provisions expected around May 2027.
 

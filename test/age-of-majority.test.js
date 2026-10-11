@@ -83,9 +83,11 @@ describe('the bundled tables', () => {
   it('cover every US state and DC, every Canadian province and territory, and every Australian state', () => {
     for (const s of ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IA', 'KS',
       'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NY', 'NC', 'ND', 'OH', 'OK',
-      'OR', 'PA', 'RI', 'SC', 'SD', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY']) {
+      'OR', 'PA', 'RI', 'SC', 'SD', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'IN', 'NJ', 'NM', 'TN']) {
       assert.ok(ageOfMajority(`US-${s}`), `US-${s}`);
     }
+    const states = jurisdictions('majority').filter((code) => /^US-/.test(code));
+    assert.equal(states.length, 51, 'the 50 states and DC');
     for (const p of ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT']) {
       assert.ok(ageOfMajority(`CA-${p}`), `CA-${p}`);
     }
@@ -114,6 +116,10 @@ describe('isMinor — the day before, of and after the threshold', () => {
     ['CA-BC', 19, '2007-05-10'],
     ['NZ', 20, '2006-05-10'],
     ['US-TX', 18, '2008-05-10'],
+    ['US-IN', 18, '2008-05-10'],
+    ['US-NJ', 18, '2008-05-10'],
+    ['US-NM', 18, '2008-05-10'],
+    ['US-TN', 18, '2008-05-10'],
   ];
   for (const [jurisdiction, age, birthDate] of cases) {
     it(`${jurisdiction}: majority at ${age}`, () => {
@@ -137,6 +143,19 @@ describe('isMinor — the day before, of and after the threshold', () => {
       assert.equal(minorUntil(birthDate, jurisdiction), day(0));
     });
   }
+
+  it('Indiana, New Jersey, New Mexico and Tennessee: 18, each cited to its own provision', () => {
+    const expected = {
+      'US-IN': 'Ind. Code § 1-1-4-5', 'US-NJ': 'N.J.S.A. 9:17B-3', 'US-NM': 'N.M. Stat. Ann. § 28-6-1', 'US-TN': 'Tenn. Code Ann. § 1-3-105',
+    };
+    for (const [code, citation] of Object.entries(expected)) {
+      const rule = ageOfMajority(code, { at: AS_OF });
+      assert.equal(rule.age, 18, code);
+      assert.equal(rule.matched, code);
+      assert.ok(rule.citation.startsWith(citation), `${code}: ${rule.citation}`);
+      assert.equal(rule.confidence, 'medium', code);
+    }
+  });
 
   it('a person of 18 in Mississippi is a minor; the same person in Czechia is not', () => {
     const args = { birthDate: '2008-01-15', at: '2026-10-11' };
@@ -278,7 +297,7 @@ describe('places the tables do not answer', () => {
   });
 
   it('an unresearched place is unknown — never a guessed 18', () => {
-    for (const code of ['SA', 'AE', 'SG', 'ID', 'EC', 'GR', 'CY', 'GU', 'VI', 'MP', 'AS', 'US-IN', 'US-NJ', 'US-NM', 'US-TN']) {
+    for (const code of ['SA', 'AE', 'SG', 'ID', 'EC', 'GR', 'CY', 'GU', 'VI', 'MP', 'AS']) {
       assert.equal(ageOfMajority(code), null, code);
       const result = isMinor({ birthDate: '1990-01-01', jurisdiction: code, at: '2026-01-01' });
       assert.equal(result.minor, null, code);
