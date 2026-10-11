@@ -1,0 +1,57 @@
+{
+  "name": "age-of-majority",
+  "version": "1.0.0",
+  "description": "Is this person a minor here? The age of majority and the digital-consent age (GDPR Art. 8, COPPA and equivalents) by jurisdiction — US states, Canadian provinces, Australian states, the EU/EEA, the UK and more — each with its statute, a link, a confidence level and effective-dated changes. Leap-day births handled per statute. Unknown places answer null, never a guessed 18. Pure functions, zero dependencies.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "data.js",
+    "dates.js",
+    "jurisdictions.js",
+    "freeze.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "age-of-majority",
+    "minor",
+    "age",
+    "majority",
+    "gdpr",
+    "gdpr-article-8",
+    "coppa",
+    "digital-consent",
+    "parental-consent",
+    "age-verification",
+    "jurisdiction",
+    "compliance",
+    "leap-year"
+  ],
+  "author": "Drew Thomas <drew@drewthomasbuilds.com> (https://drewthomasbuilds.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drewthomas00/age-of-majority.git"
+  },
+  "bugs": {
+    "url": "https://github.com/drewthomas00/age-of-majority/issues"
+  },
+  "homepage": "https://github.com/drewthomas00/age-of-majority#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}
