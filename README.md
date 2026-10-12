@@ -203,6 +203,8 @@ Each version's `citation` names the provision and `sourceUrl` links it. `effecti
 
 The tables are plain data in [`data.js`](data.js), validated at load — a malformed entry fails the `require()`, not a lookup months later. To report a change or fill a gap, open an issue or a PR with the provision, a link to its text, and the date it takes effect. A law change is a new version with an `effectiveFrom`, never an edit that rewrites history.
 
+The tables are re-checked against their sources every December and June, and after any reported change; `AS_OF` is the date of the last full review, and CI fails once it is more than six months old. See [CONTRIBUTING.md](CONTRIBUTING.md) for what a report or a pull request needs.
+
 ## Testing
 
 ```sh

@@ -1,0 +1,58 @@
+name: Law change or wrong value
+description: A rule changed, or a value in the tables is wrong.
+title: "Law change: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks. Every value in this package rests on a source that can be read, so the provision and a link to its official text are required. See CONTRIBUTING.md.
+  - type: input
+    id: jurisdiction
+    attributes:
+      label: Jurisdiction
+      description: "ISO 3166 code, e.g. `FR`, `US-MS` or `CA-BC`."
+      placeholder: US-MS
+    validations:
+      required: true
+  - type: dropdown
+    id: rule
+    attributes:
+      label: Which table
+      options:
+        - "Age of majority"
+        - "Digital-consent age (GDPR Art. 8, COPPA or equivalent)"
+        - "Both"
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: What the package says, and what the law says
+      description: The value the package gives now and the value the law sets. Include the call you made if you have one.
+      placeholder: "ageOfMajority('US-MS', { on: '2026-07-01' })"
+    validations:
+      required: true
+  - type: input
+    id: citation
+    attributes:
+      label: Provision
+      description: The statute, regulation or code section that sets the rule.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Link to the official text
+      description: A legislature, gazette or enforcing agency. If it is not online yet, say so and link what you have.
+    validations:
+      required: true
+  - type: input
+    id: effective
+    attributes:
+      label: Date it takes effect
+      description: YYYY-MM-DD, if known.
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Exceptions, pending bills, or an agency's guidance on how it reads the text.
