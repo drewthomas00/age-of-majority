@@ -133,10 +133,10 @@ As of **2026-10-11** (`AS_OF`). Counts are entries with an answer of their own; 
 
 | Table | Entries | `high` | `medium` |
 |---|---|---|---|
-| `majority` | 125 | 99 | 26 |
+| `majority` | 129 | 102 | 27 |
 | `digitalConsent` | 39 | 31 | 8 |
 
-**Majority** — all 50 US states and DC, Puerto Rico; all 13 Canadian provinces and territories; all 8 Australian states and territories; the UK (GB, and GB-ENG, GB-WLS, GB-SCT, GB-NIR); 25 EU states, Iceland, Liechtenstein, Norway and Switzerland; New Zealand, Mexico (federal), Japan, Korea, Taiwan, China, Malaysia, Thailand, the Philippines, Vietnam, India, Türkiye, Egypt, South Africa, Kenya, Brazil, Argentina and Uruguay.
+**Majority** — all 50 US states and DC, Puerto Rico; all 13 Canadian provinces and territories; all 8 Australian states and territories; the UK (GB, and GB-ENG, GB-WLS, GB-SCT, GB-NIR); all 27 EU states, Iceland, Liechtenstein, Norway and Switzerland; New Zealand, Mexico (federal), Japan, Korea, Taiwan, China, Malaysia, Thailand, the Philippines, Vietnam, India, Türkiye, Egypt, South Africa, Kenya, Brazil, Argentina, Uruguay, Chile and Colombia.
 
 Not 18:
 
@@ -152,7 +152,7 @@ Not 18:
 
 `null` means one of these, not "probably 18":
 
-- **No linkable citation found in this review** — majority: American Samoa, Cyprus, Greece, Macau, Sri Lanka, Israel, Chile, Colombia, Peru, Venezuela, Bolivia, Paraguay, Guatemala, the Dominican Republic, Jamaica, Russia, Ukraine, Belarus, Georgia, Armenia, Serbia; digital consent: Kenya, Nigeria, Vietnam, Peru. Each has a reported age, but nothing in the tables ships without a source a reader can follow. These are the first candidates for a contribution.
+- **No linkable citation found in this review** — majority: American Samoa, Macau, Sri Lanka, Israel, Peru, Venezuela, Bolivia, Paraguay, Guatemala, the Dominican Republic, Jamaica, Russia, Ukraine, Belarus, Georgia, Armenia, Serbia; digital consent: Kenya, Nigeria, Vietnam, Peru. Each has a reported age, but nothing in the tables ships without a source a reader can follow. These are the first candidates for a contribution.
 - **Not verified** — Guam, the US Virgin Islands and the Northern Mariana Islands; Hong Kong, Nigeria, Ghana, Kuwait, Qatar, Bahrain, Kazakhstan, Moldova, the western Balkans outside the EU, and much of the world not listed above.
 - **No single answer** — Singapore (21 at common law, 18 for contracts), Indonesia (21 in the Civil Code, 18 elsewhere), Pakistan and Bangladesh (18, but 21 under a court-appointed guardian), Thailand's digital-consent rules (split by age band), Ecuador (sources conflict).
 - **Counted in lunar years** — Saudi Arabia; and the UAE before 2026-06-01, when it moved to 18 Gregorian years (Federal Decree-Law No. 25 of 2025, art. 84 as reported; not encoded yet, because the official text could not be reached).

@@ -29,7 +29,7 @@ body:
     attributes:
       label: What the package says, and what the law says
       description: The value the package gives now and the value the law sets. Include the call you made if you have one.
-      placeholder: "ageOfMajority('US-MS', { on: '2026-07-01' })"
+      placeholder: "ageOfMajority('US-MS', { at: '2026-07-01' })"
     validations:
       required: true
   - type: input

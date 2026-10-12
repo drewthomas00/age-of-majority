@@ -295,8 +295,22 @@ describe('places the tables do not answer', () => {
     }
   });
 
+  it('Chile, Colombia and Greece answer 18 from the day it took effect, and nothing before', () => {
+    for (const [code, from, before] of [['CL', '1993-07-01', '1993-06-30'], ['CO', '1977-11-04', '1977-11-03'], ['GR', '1983-02-18', '1983-02-17']]) {
+      assert.equal(ageOfMajority(code, { at: before }), null, code);
+      assert.equal(ageOfMajority(code, { at: from }).age, 18, code);
+      assert.equal(ageOfMajority(code, { at: from }).effectiveFrom, from, code);
+    }
+    // Colombia's Civil Code art. 34 still reads 21; the citation must name the law that changed it.
+    assert.match(ageOfMajority('CO').citation, /Ley 27 de 1977/);
+    // Cyprus: 18, with no confirmed start date.
+    assert.equal(ageOfMajority('CY', { at: '1960-01-01' }).age, 18);
+    assert.equal(isMinor({ birthDate: '2008-10-12', jurisdiction: 'GR', at: '2026-10-12' }).minor, false);
+    assert.equal(isMinor({ birthDate: '2008-10-13', jurisdiction: 'GR', at: '2026-10-12' }).minor, true);
+  });
+
   it('an unresearched place is unknown — never a guessed 18', () => {
-    for (const code of ['SA', 'AE', 'SG', 'ID', 'EC', 'GR', 'CY', 'GU', 'VI', 'MP', 'AS']) {
+    for (const code of ['SA', 'AE', 'SG', 'ID', 'EC', 'PE', 'VE', 'GU', 'VI', 'MP', 'AS']) {
       assert.equal(ageOfMajority(code), null, code);
       const result = isMinor({ birthDate: '1990-01-01', jurisdiction: code, at: '2026-01-01' });
       assert.equal(result.minor, null, code);
@@ -385,7 +399,7 @@ describe('input normalisation', () => {
   it('lists the codes in each table', () => {
     const majority = jurisdictions('majority');
     assert.ok(majority.includes('US-MS') && majority.includes('NZ') && !majority.includes('US'), 'a country that answers only per subdivision is not listed');
-    assert.equal(majority.length, 125);
+    assert.equal(majority.length, 129);
     assert.deepEqual(majority, [...majority].sort());
     assert.ok(jurisdictions('digitalConsent').includes('CL'));
   });
