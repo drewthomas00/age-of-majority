@@ -131,8 +131,8 @@ As of **2026-10-11** (`AS_OF`). Counts are entries with an answer of their own; 
 
 | Table | Entries | `high` | `medium` |
 |---|---|---|---|
-| `majority` | 125 | 89 | 36 |
-| `digitalConsent` | 39 | 32 | 7 |
+| `majority` | 125 | 99 | 26 |
+| `digitalConsent` | 39 | 31 | 8 |
 
 **Majority** — all 50 US states and DC, Puerto Rico; all 13 Canadian provinces and territories; all 8 Australian states and territories; the UK (GB, and GB-ENG, GB-WLS, GB-SCT, GB-NIR); 25 EU states, Iceland, Liechtenstein, Norway and Switzerland; New Zealand, Mexico (federal), Japan, Korea, Taiwan, China, Malaysia, Thailand, the Philippines, Vietnam, India, Türkiye, Egypt, South Africa, Kenya, Brazil, Argentina and Uruguay.
 
@@ -157,6 +157,13 @@ Not 18:
 - **No statutory digital-consent age** — Switzerland (the revised data protection act relies on the capacity of judgement, not a fixed age), Canada outside Québec, Australia (a children's online privacy code is in draft), Japan, Singapore, New Zealand, Argentina, Mexico, Türkiye, the Philippines.
 - **Not yet in force, with uncertain dates** — India's Digital Personal Data Protection Act 2023 sets 18, with the children's provisions expected around May 2027.
 
+### Known limitations
+
+- **History is only as deep as the dates found.** An entry with a recorded change (Japan 2022, Northern Ireland 1970, Connecticut 1972, …) answers `no_rule_in_force` before its first date rather than guess. An entry whose change date could not be confirmed — Argentina (2009), Liechtenstein (2000), and most places that lowered the age from 21 in the 1970s without a date in the tables (Germany, Spain, Austria, Mexico, the Philippines, the Nordic states) — answers today's age for every past date. Do not use those entries for a date before the change.
+- **Some in-force dates are publication dates** (France 1974, Uruguay 1995); each `note` says so and the entry is `medium`.
+- **Some answers rest on an unofficial copy or a secondary source** (`confidence: 'medium'`), as each `note` says.
+- **Not reviewed by a lawyer.**
+
 ## Attainment and leap days
 
 **An age is attained at the start of the anniversary.** That is the default here and the rule in the statutes checked: England and Wales (Family Law Reform Act 1969, s. 9), Northern Ireland (Age of Majority Act (NI) 1969, s. 5(1)), Ireland (Age of Majority Act 1985, s. 4(1)), New Zealand (Age of Majority Act 1970, s. 5), Malaysia (Age of Majority Act 1971, s. 3(2)), Maryland (Gen. Prov. § 1-303), Canada's federal Interpretation Act (s. 30) and the Ontario, New Brunswick, Manitoba, Nova Scotia, Northwest Territories and Saskatchewan Acts. California, Montana, North Dakota, Oklahoma and South Dakota say "the first minute of the birthday". Japan, Korea and Taiwan count the day of birth as a whole day, so the age is attained the instant the day before the anniversary ends — the same moment.
@@ -169,7 +176,6 @@ The old common-law rule attained an age on the day *before* the anniversary. No 
 |---|---|---|
 | 1 March | default, wherever the statute is silent | — |
 | 1 March (explicit) | Scotland | Age of Legal Capacity (Scotland) Act 1991, s. 6(2) |
-| 1 March (explicit) | South Australia | Legislation Interpretation Act 2021, s. 49(2) |
 | 1 March (explicit) | Maryland | Gen. Prov. § 1-303 |
 | 1 March (the instant 28 February ends) | Japan, Korea, Taiwan | Act on Calculation of Age 1902 (JP); Civil Act art. 160 (KR); Civil Code arts. 121, 124 (TW) |
 | **28 February** | **Newfoundland and Labrador** | Age of Majority Act, SNL 1995, s. 3(2) |

@@ -437,3 +437,17 @@ describe('review fixes, 2026-10-11', () => {
     assert.match(after.sourceUrl, /\/2024\/289$/);
   });
 });
+
+describe('second review, 2026-10-11', () => {
+  it('an age lowered on a known date has no answer before it, never a wrong 18', () => {
+    for (const [code, from] of [['GB-NIR', '1970-01-01'], ['US-CT', '1972-10-01'], ['US-MI', '1972-01-01'], ['CA-NS', '1971-04-13'], ['IE', '1985-03-01'], ['IT', '1975-03-10']]) {
+      const day = new Date(Date.parse(`${from}T00:00:00Z`) - 86400000).toISOString().slice(0, 10);
+      assert.equal(aom.threshold(code, 'majority', { at: day }), null, code);
+      assert.ok(aom.threshold(code, 'majority', { at: from }), code);
+    }
+  });
+
+  it('New Brunswick cites the Act in force', () => {
+    assert.match(aom.threshold('CA-NB', 'majority').sourceUrl, /2011-c\.103$/);
+  });
+});
