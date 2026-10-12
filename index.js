@@ -111,6 +111,12 @@ function normalizeEntry(where, entry) {
     if (typeof entry.note !== 'string' || entry.note === '') {
       throw new TypeError(`${where}: a bySubdivision entry needs a note saying who sets the threshold`);
     }
+    if (entry.citation !== undefined && (typeof entry.citation !== 'string' || entry.citation === '')) {
+      throw new TypeError(`${where}: citation must be a non-empty string`);
+    }
+    if (entry.sourceUrl !== undefined && (typeof entry.sourceUrl !== 'string' || !/^https?:\/\/\S+$/.test(entry.sourceUrl))) {
+      throw new TypeError(`${where}: sourceUrl must be an http(s) URL`);
+    }
     return Object.freeze({
       bySubdivision: true,
       versions: Object.freeze([]),
@@ -181,6 +187,8 @@ function fromParts(where, input, countryInput, subdivisionInput) {
   if (country === 'US' && iso.US_TERRITORIES.includes(subdivisionInput)) {
     return { code: subdivisionInput, country: subdivisionInput, subdivision: null };
   }
+  const own = iso.OWN_CODES[`${country}-${subdivisionInput}`];
+  if (own) return { code: own, country: own, subdivision: null };
   return { code: `${country}-${subdivisionInput}`, country, subdivision: subdivisionInput };
 }
 
@@ -211,7 +219,9 @@ function parseJurisdiction(where, input) {
         throw new TypeError(`${where}: unknown jurisdiction field '${key}' (expected country, subdivision)`);
       }
     }
-    const { country, subdivision } = input;
+    // Own fields only: an inherited country is not something the caller passed.
+    const own = (key) => (Object.prototype.hasOwnProperty.call(input, key) ? input[key] : undefined);
+    const country = own('country'); const subdivision = own('subdivision');
     if (typeof country !== 'string' || !/^[A-Z]{2}$/.test(country.trim().toUpperCase())) {
       throw new TypeError(`${where}: jurisdiction.country must be an ISO 3166-1 alpha-2 code (got ${dates.describe(country)})`);
     }
@@ -291,10 +301,12 @@ function versionAt(entry, dateString) {
   return found;
 }
 
+/** The last day a version is in force (the day before the next one), or null. */
 function versionEnd(entry, version) {
   const index = entry.versions.indexOf(version);
   const next = entry.versions[index + 1];
-  return next ? next.effectiveFrom : null;
+  if (!next) return null;
+  return dates.formatDate(dates.fromDayNumber(dates.toDayNumber(dates.parseIsoDate(next.effectiveFrom)) - 1));
 }
 
 function describeVersion(kind, parsed, matched, entry, version) {
@@ -326,9 +338,14 @@ function checkOptions(where, options, allowed) {
 }
 
 function readTimeZone(where, timeZone) {
-  if (timeZone === undefined) return 'UTC';
+  if (timeZone === undefined) return undefined;
   if (typeof timeZone !== 'string' || timeZone === '') {
     throw new TypeError(`${where}: timeZone must be an IANA zone name`);
+  }
+  try {
+    dates.zoneFormat(timeZone);
+  } catch {
+    throw new RangeError(`${where}: timeZone '${timeZone}' is not a time zone this runtime knows`);
   }
   return timeZone;
 }
@@ -337,10 +354,25 @@ function lookup(where, kind, jurisdiction, options) {
   const opts = checkOptions(where, options, ['at', 'timeZone']);
   const table = tableFor(where, kind);
   const parsed = parseJurisdiction(where, jurisdiction);
-  const at = dates.formatDate(dates.parseAt(`${where}: at`, opts.at, readTimeZone(where, opts.timeZone)));
+  const timeZone = readTimeZone(where, opts.timeZone);
   const found = findEntry(table, parsed);
+  // Today, or a Date, with no zone: answer only if every calendar day that
+  // instant falls on somewhere gives the same rule. On the day a law changes
+  // the zone matters, and the caller is asked for it rather than guessed at.
+  let days;
+  if (timeZone === undefined && (opts.at === undefined || dates.isDate(opts.at))) {
+    const instant = opts.at === undefined ? new Date() : opts.at;
+    if (Number.isNaN(instant.getTime())) throw new TypeError(`${where}: at is an invalid Date`);
+    days = dates.daysAround(instant);
+  } else {
+    days = [dates.formatDate(dates.parseAt(`${where}: at`, opts.at, timeZone))];
+  }
   if (!found.entry) return { parsed, result: null, status: found.status };
-  const version = versionAt(found.entry, at);
+  const versions = new Set(days.map((d) => versionAt(found.entry, d)));
+  if (versions.size > 1) {
+    throw new TypeError(`${where}: the rule in ${parsed.code} changes on a day this instant falls on in some places; pass timeZone, or at as a 'YYYY-MM-DD' string`);
+  }
+  const [version] = versions;
   if (!version) return { parsed, result: null, status: REASONS.NO_RULE_IN_FORCE };
   return { parsed, result: describeVersion(kind, parsed, found.matched, found.entry, version), status: null };
 }
@@ -400,9 +432,12 @@ function readRules(where, opts, version) {
  *
  * Each version covers [effectiveFrom, next effectiveFrom); within it the
  * person is at or above the threshold from the day they attain its age. The
- * answer is the start of the last unbroken run of such days. The earliest
- * version is treated as reaching back indefinitely, so the date is still
- * computed for people who passed the threshold before the first recorded rule.
+ * answer is the start of the last unbroken run of such days. A first version
+ * without a date reaches back indefinitely. A first version with one does
+ * not: if the run starts on that date because the person had already
+ * attained its age, nothing is recorded about when they really crossed the
+ * threshold (it may have been earlier, under an older rule), and the answer
+ * is null rather than a guess.
  *
  * @returns {number|null} day number
  */
@@ -410,9 +445,10 @@ function reachesThreshold(entry, birth, opts, where) {
   let runStart = null;
   let runEnd = null; // exclusive; null = open-ended
   const spans = [];
+  const first = entry.versions[0];
+  const firstFrom = first.effectiveFrom === null ? -Infinity : dates.toDayNumber(dates.parseIsoDate(first.effectiveFrom));
   entry.versions.forEach((version, index) => {
-    const from = index === 0 || version.effectiveFrom === null
-      ? -Infinity : dates.toDayNumber(dates.parseIsoDate(version.effectiveFrom));
+    const from = index === 0 ? firstFrom : dates.toDayNumber(dates.parseIsoDate(version.effectiveFrom));
     const next = entry.versions[index + 1];
     const to = next ? dates.toDayNumber(dates.parseIsoDate(next.effectiveFrom)) : Infinity;
     const attained = dates.attainedOn(birth, version.age, readRules(where, opts, version));
@@ -428,6 +464,7 @@ function reachesThreshold(entry, birth, opts, where) {
     }
   }
   if (runEnd !== Infinity) return null;
+  if (runStart === firstFrom && Number.isFinite(firstFrom) && dates.attainedOn(birth, first.age, readRules(where, opts, first)) < firstFrom) return null;
   return runStart;
 }
 
@@ -538,6 +575,7 @@ function needsParentalConsent(args) {
 function minorUntil(birthDate, jurisdiction, options) {
   const where = 'minorUntil';
   const opts = checkOptions(where, options, ['leapDay', 'attainment']);
+  readRules(where, opts, null);
   const parsed = parseJurisdiction(where, jurisdiction);
   const birth = dates.parseBirthDate(`${where}: birthDate`, birthDate);
   const found = findEntry(TABLES[KINDS.MAJORITY], parsed);
@@ -588,10 +626,10 @@ function strictest(jurisdictions, kind, options) {
   const unknown = [];
   let governing = null;
   for (const jurisdiction of jurisdictions) {
-    const { parsed, result } = lookup(where, kind, jurisdiction, options);
+    const { parsed, result, status } = lookup(where, kind, jurisdiction, options);
     results.push(result);
     if (result === null) {
-      if (!unknown.includes(parsed.code)) unknown.push(parsed.code);
+      if (!unknown.some((u) => u.jurisdiction === parsed.code)) unknown.push(Object.freeze({ jurisdiction: parsed.code, reason: status }));
     } else if (governing === null || result.age > governing.age) {
       governing = result;
     }
@@ -606,13 +644,15 @@ function strictest(jurisdictions, kind, options) {
 }
 
 /**
- * Every code with an entry of its own in a table.
+ * Every code with an answer of its own in a table (a country that leaves the
+ * question to its subdivisions, such as 'US' for majority, is not listed).
  *
  * @param {'majority'|'digitalConsent'} kind
  * @returns {string[]}
  */
 function jurisdictions(kind) {
-  return Object.keys(tableFor('jurisdictions', kind)).sort();
+  const table = tableFor('jurisdictions', kind);
+  return Object.keys(table).filter((code) => !table[code].bySubdivision).sort();
 }
 
 const MAJORITY = TABLES[KINDS.MAJORITY];

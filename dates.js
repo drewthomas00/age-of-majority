@@ -63,19 +63,53 @@ function parseIsoDate(value) {
   return { year, month, day };
 }
 
+/** One formatter per zone: building one costs far more than using it. */
+const FORMATS = new Map();
+
+/** Is `value` a Date, from this realm or another (a vm context, an iframe)? */
+function isDate(value) {
+  return Object.prototype.toString.call(value) === '[object Date]';
+}
+
+/**
+ * A formatter that reads an instant on `timeZone`'s calendar; throws a
+ * RangeError for a zone the runtime does not know.
+ */
+function zoneFormat(timeZone) {
+  let format = FORMATS.get(timeZone);
+  if (!format) {
+    format = new Intl.DateTimeFormat('en-US', {
+      timeZone, calendar: 'gregory', numberingSystem: 'latn',
+      year: 'numeric', month: 'numeric', day: 'numeric', era: 'short',
+    });
+    FORMATS.set(timeZone, format);
+  }
+  return format;
+}
+
 /** The calendar date of an instant, read on a zone's wall clock. */
 function dateInZone(instant, timeZone) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone, calendar: 'gregory', numberingSystem: 'latn',
-    year: 'numeric', month: 'numeric', day: 'numeric', era: 'short',
-  }).formatToParts(instant);
+  const parts = zoneFormat(timeZone).formatToParts(instant);
   const read = (type) => parts.find((part) => part.type === type);
   const year = Number(read('year').value);
   const era = read('era');
   if (era && /^B/i.test(era.value)) {
     throw new RangeError(`date before year 1 is not supported (got ${instant.toISOString()})`);
   }
+  if (year > 9999) throw new RangeError(`date after year 9999 is not supported (got ${instant.toISOString()})`);
   return { year, month: Number(read('month').value), day: Number(read('day').value) };
+}
+
+/**
+ * Every calendar day an instant falls on somewhere on Earth (UTC−12 to
+ * UTC+14): two or three days, as 'YYYY-MM-DD', earliest first.
+ */
+function daysAround(instant) {
+  const first = toDayNumber(dateInZone(instant, 'Etc/GMT+12'));
+  const last = toDayNumber(dateInZone(instant, 'Etc/GMT-14'));
+  const out = [];
+  for (let d = first; d <= last; d += 1) out.push(formatDate(fromDayNumber(d)));
+  return out;
 }
 
 /**
@@ -95,7 +129,7 @@ function parseBirthDate(where, value) {
     if (!parsed) throw new TypeError(`${where} must be a real calendar date as 'YYYY-MM-DD' (got '${value}')`);
     return parsed;
   }
-  if (value instanceof Date) {
+  if (isDate(value)) {
     if (Number.isNaN(value.getTime())) throw new TypeError(`${where} is an invalid Date`);
     if (value.getTime() % MS_PER_DAY !== 0) {
       throw new TypeError(
@@ -104,7 +138,7 @@ function parseBirthDate(where, value) {
       );
     }
     const date = fromDayNumber(value.getTime() / MS_PER_DAY);
-    if (date.year < 1) throw new RangeError(`${where} is before year 1`);
+    if (date.year < 1 || date.year > 9999) throw new RangeError(`${where} is outside years 1 to 9999`);
     return date;
   }
   throw new TypeError(`${where} must be a 'YYYY-MM-DD' string or a Date (got ${describe(value)})`);
@@ -112,22 +146,30 @@ function parseBirthDate(where, value) {
 
 /**
  * Read the date to evaluate on: a 'YYYY-MM-DD' string (taken as given), a Date
- * (read on `timeZone`'s calendar), or undefined (today, on `timeZone`'s calendar).
+ * (read on `timeZone`'s calendar), or undefined (today, on `timeZone`'s
+ * calendar). A Date or "today" needs the zone: which calendar day an instant
+ * falls on depends on where the person is, and a day decides a birthday.
  *
  * @param {string} where
  * @param {string|Date|undefined} value
- * @param {string} timeZone - IANA zone; an invalid one throws a RangeError
+ * @param {string|undefined} timeZone - IANA zone
  */
 function parseAt(where, value, timeZone) {
-  if (value === undefined) return dateInZone(new Date(), timeZone);
+  if ((value === undefined || isDate(value)) && timeZone === undefined) {
+    throw new TypeError(
+      `${where}: ${value === undefined ? 'today' : 'a Date'} is a different calendar day in different places; `
+      + "pass timeZone (e.g. 'America/Chicago'), or pass at as a 'YYYY-MM-DD' string",
+    );
+  }
+  if (value === undefined) return dateInZone(new Date(), /** @type {string} */ (timeZone));
   if (typeof value === 'string') {
     const parsed = parseIsoDate(value);
     if (!parsed) throw new TypeError(`${where} must be a real calendar date as 'YYYY-MM-DD' (got '${value}')`);
     return parsed;
   }
-  if (value instanceof Date) {
+  if (isDate(value)) {
     if (Number.isNaN(value.getTime())) throw new TypeError(`${where} is an invalid Date`);
-    return dateInZone(value, timeZone);
+    return dateInZone(value, /** @type {string} */ (timeZone));
   }
   throw new TypeError(`${where} must be a 'YYYY-MM-DD' string or a Date (got ${describe(value)})`);
 }
@@ -182,10 +224,14 @@ function completedYears(birth, on, rules) {
 function describe(value) {
   if (value === null) return 'null';
   if (Array.isArray(value)) return 'an array';
+  if (isDate(value)) return 'a Date';
   return typeof value === 'string' ? `'${value}'` : typeof value;
 }
 
 module.exports = {
+  zoneFormat,
+  isDate,
+  daysAround,
   LEAP_DAY_RULES,
   ATTAINMENT_RULES,
   isLeapYear,

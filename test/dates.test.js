@@ -130,13 +130,15 @@ describe('date inputs', () => {
 
   it('reads an `at` Date on the given timeZone calendar', () => {
     const instant = new Date('2026-03-14T02:00:00Z'); // 13 March in New York
-    assert.equal(ageOn('2008-03-14', { at: instant }), 18);
+    assert.throws(() => ageOn('2008-03-14', { at: instant }), /pass timeZone/);
+    assert.equal(ageOn('2008-03-14', { at: instant, timeZone: 'UTC' }), 18);
     assert.equal(ageOn('2008-03-14', { at: instant, timeZone: 'America/New_York' }), 17);
     assert.equal(ageOn('2008-03-14', { at: new Date('2026-03-13T12:00:00Z'), timeZone: 'Pacific/Kiritimati' }), 18);
   });
 
-  it('defaults `at` to today', () => {
-    assert.equal(typeof ageOn('2000-01-01'), 'number');
+  it('defaults `at` to today, in the zone given', () => {
+    assert.equal(typeof ageOn('2000-01-01', { timeZone: 'Europe/Prague' }), 'number');
+    assert.throws(() => ageOn('2000-01-01'), /pass timeZone/);
   });
 
   for (const bad of ['2023-02-29', '2024-13-01', '2024-00-10', '2024-04-31', '24-01-01', '2024-1-1',

@@ -29,9 +29,13 @@ jobs:
   # the runner's own clock.
   test-non-utc:
     runs-on: ubuntu-latest
-    name: node 22 (TZ=Pacific/Auckland)
+    strategy:
+      fail-fast: false
+      matrix:
+        tz: ['Pacific/Auckland', 'America/Los_Angeles']
+    name: node 22 (TZ=${{ matrix.tz }})
     env:
-      TZ: Pacific/Auckland
+      TZ: ${{ matrix.tz }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

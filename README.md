@@ -99,7 +99,7 @@ strictest(['US-AL', 'US-MS', 'CZ'], 'majority');
 // { kind: 'majority', age: 21, governing: { jurisdiction: 'US-MS', ... },
 //   unknown: [], results: [ {age: 19}, {age: 21}, {age: 18} ] }
 
-strictest(['US-AL', 'SA'], 'majority').age;   // null; unknown: ['SA']
+strictest(['US-AL', 'SA'], 'majority').age;   // null; unknown: [{ jurisdiction: 'SA', reason: 'unknown_jurisdiction' }]
 ```
 
 ### API
@@ -111,17 +111,19 @@ strictest(['US-AL', 'SA'], 'majority').age;   // null; unknown: ['SA']
 | `ageOfMajority(jurisdiction, { at?, timeZone? })` | the threshold in force, or `null` |
 | `digitalConsentAge(jurisdiction, { at?, timeZone? })` | the threshold in force, or `null` |
 | `threshold(jurisdiction, kind, { at?, timeZone? })` | either of the above by `kind` |
-| `minorUntil(birthDate, jurisdiction, { leapDay?, attainment? })` | `'YYYY-MM-DD'` the person reaches majority, or `null` |
+| `minorUntil(birthDate, jurisdiction, { leapDay?, attainment? })` | `'YYYY-MM-DD'` the person reaches majority and stays an adult under every later rule, or `null` (see below) |
 | `ageOn(birthDate, { at?, timeZone?, leapDay?, attainment? })` | completed years |
 | `strictest(jurisdictions, kind, { at?, timeZone? })` | `{ kind, age, governing, unknown, results }` |
 | `normalizeJurisdiction(jurisdiction)` | the canonical code |
-| `jurisdictions(kind)` | every code with its own entry |
+| `jurisdictions(kind)` | every code with an answer of its own (`'US'`, which answers majority only per state, is not listed) |
 
 Constants: `MAJORITY`, `DIGITAL_CONSENT` (the tables), `AS_OF`, `KINDS`, `REASONS`.
 
-**Jurisdictions** are ISO 3166-1 alpha-2 (`'CZ'`) or ISO 3166-2 (`'US-AL'`, `'CA-BC'`, `'AU-SA'`, `'GB-SCT'`) codes, or `{ country, subdivision }`. Case and whitespace are ignored; `'UK'` and `'EL'` are accepted for GB and GR; `'US-PR'` normalises to `'PR'`. A place without its own entry is answered by its country (`'GB-SCT'` digital consent → GB), and a US territory or French overseas department by the governing country where it has no entry of its own. A code that names no place (`'ZZ'`, `'US-XX'`) **throws a `TypeError`** — a typo is a bug, not an unknown jurisdiction.
+**Jurisdictions** are ISO 3166-1 alpha-2 (`'CZ'`) or ISO 3166-2 (`'US-AL'`, `'CA-BC'`, `'AU-SA'`, `'GB-SCT'`) codes, or `{ country, subdivision }`. Case and whitespace are ignored; `'UK'` and `'EL'` are accepted for GB and GR; `'US-PR'` normalises to `'PR'`. A place without its own entry is answered by its country (`'GB-SCT'` digital consent → GB), and a US territory or French overseas department by the governing country where it has no entry of its own. A code that names no country (`'ZZ'`), or no state, province or territory of the US, Canada or Australia (`'US-XX'`), **throws a `TypeError`** — a typo is a bug, not an unknown jurisdiction; other countries' subdivision codes are not checked, and are answered by the country. A place with its own country code answers the same however it is spelled: `'CN-TW'` is `'TW'`, `'NL-AW'` is `'AW'`, `'FR-NC'` is `'NC'`, `'FI-01'` is `'AX'`.
 
-**Dates.** `birthDate` is a calendar date: `'YYYY-MM-DD'`, or a `Date` at exactly midnight UTC (what `new Date('2008-03-14')` produces). Any other `Date` is refused rather than rounded, because picking a calendar day for `new Date(2008, 2, 14)` would move the birthday by a day in half the world. `at` defaults to today; a `Date` `at` is read on `timeZone`'s calendar (default `'UTC'`).
+**Dates.** `birthDate` is a calendar date: `'YYYY-MM-DD'`, or a `Date` at exactly midnight UTC (what `new Date('2008-03-14')` produces). Any other `Date` is refused rather than rounded, because picking a calendar day for `new Date(2008, 2, 14)` would move the birthday by a day in half the world. `at` is best given as `'YYYY-MM-DD'`. A `Date`, or today when `at` is omitted, is a different calendar day in different places, so it is read on `timeZone`'s calendar and needs one: always for a person (`isMinor`, `needsParentalConsent`, `ageOn`), and for a threshold lookup only when the instant falls on a day the rule changes somewhere on Earth — otherwise the answer is the same everywhere and is given. A `timeZone` the runtime does not know throws.
+
+**`minorUntil` and `canConsentFrom`** are the first day from which the person is past the threshold and stays past it under every later rule in the tables. They are `null` when the tables hold no answer, and also when the person attained the age before the first rule the tables record (South Africa's 18 from 2007: someone born in 1988 crossed it under the older rule, on a date the tables do not hold). `effectiveUntil` is the last day a version is in force.
 
 Unknown option names throw. Every result and every table is deeply frozen.
 
@@ -207,7 +209,7 @@ The tables are plain data in [`data.js`](data.js), validated at load — a malfo
 npm test
 ```
 
-Node's built-in test runner, no framework. CI runs the suite on Node 18–24 and again under a non-UTC `TZ`.
+Node's built-in test runner, no framework. CI runs the suite on Node 18–26 and again under two non-UTC `TZ` settings, one either side of UTC.
 
 ## Authorship
 

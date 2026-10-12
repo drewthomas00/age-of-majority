@@ -13,13 +13,14 @@
  * @param {T} value
  * @returns {Readonly<T>} the same reference, deeply frozen
  */
-function deepFreeze(value) {
-  if (value === null || typeof value !== 'object' || Object.isFrozen(value)) {
-    return value;
-  }
+function deepFreeze(value, seen = new WeakSet()) {
+  // An object frozen already may still hold writable children, so recurse
+  // regardless; `seen` ends the walk on a cycle.
+  if (value === null || typeof value !== 'object' || seen.has(value)) return value;
+  seen.add(value);
   Object.freeze(value);
   for (const key of Object.getOwnPropertyNames(value)) {
-    deepFreeze(value[key]);
+    deepFreeze(value[key], seen);
   }
   return value;
 }

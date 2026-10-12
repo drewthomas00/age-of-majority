@@ -85,4 +85,21 @@ const PARENTS = deepFreeze({
   GF: 'FR', GP: 'FR', MQ: 'FR', RE: 'FR', YT: 'FR',
 });
 
-module.exports = { COUNTRIES, ALIASES, US_TERRITORIES, SUBDIVISIONS, PARENTS };
+/**
+ * ISO 3166-2 subdivision codes for places that also hold an ISO 3166-1 code of
+ * their own, and are outside their parent's legal regime for these questions
+ * (or might be): the same place must get the same answer however it is
+ * spelled. 'CN-TW' answers as TW, 'NL-AW' as AW (the GDPR does not apply
+ * there), 'FR-NC' as NC. France's overseas departments map to their own codes
+ * too, which PARENTS then sends back to France.
+ */
+const OWN_CODES = deepFreeze({
+  'CN-TW': 'TW', 'CN-HK': 'HK', 'CN-MO': 'MO',
+  'NL-AW': 'AW', 'NL-CW': 'CW', 'NL-SX': 'SX', 'NL-BQ1': 'BQ', 'NL-BQ2': 'BQ', 'NL-BQ3': 'BQ',
+  'FR-NC': 'NC', 'FR-PF': 'PF', 'FR-PM': 'PM', 'FR-WF': 'WF', 'FR-BL': 'BL', 'FR-MF': 'MF', 'FR-TF': 'TF',
+  'FR-971': 'GP', 'FR-972': 'MQ', 'FR-973': 'GF', 'FR-974': 'RE', 'FR-976': 'YT',
+  'FR-GP': 'GP', 'FR-MQ': 'MQ', 'FR-GF': 'GF', 'FR-RE': 'RE', 'FR-YT': 'YT',
+  'FI-01': 'AX', 'NO-21': 'SJ', 'NO-22': 'SJ',
+});
+
+module.exports = { COUNTRIES, ALIASES, US_TERRITORIES, SUBDIVISIONS, PARENTS, OWN_CODES };

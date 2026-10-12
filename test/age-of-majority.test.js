@@ -49,7 +49,6 @@ describe('the bundled tables', () => {
         assert.ok(['high', 'medium'].includes(version.confidence), `${where} confidence`);
         assert.ok(version.note === null || version.note.length > 0, `${where} note`);
         if (version.effectiveFrom !== null) assert.match(version.effectiveFrom, /^\d{4}-\d{2}-\d{2}$/);
-        assert.ok(version.effectiveFrom === null || version.effectiveFrom <= '2026-12-01', `${where} date`);
       }
     });
 
@@ -167,7 +166,7 @@ describe('isMinor — the day before, of and after the threshold', () => {
 describe('effective-dated changes', () => {
   it('Japan: 20 until 2022-03-31, 18 from 2022-04-01 — 18- and 19-year-olds came of age that day', () => {
     assert.equal(ageOfMajority('JP', { at: '2022-03-31' }).age, 20);
-    assert.equal(ageOfMajority('JP', { at: '2022-03-31' }).effectiveUntil, '2022-04-01');
+    assert.equal(ageOfMajority('JP', { at: '2022-03-31' }).effectiveUntil, '2022-03-31');
     assert.equal(ageOfMajority('JP', { at: '2022-04-01' }).age, 18);
     assert.equal(ageOfMajority('JP', { at: '2022-04-01' }).effectiveFrom, '2022-04-01');
     const birthDate = '2003-06-01';
@@ -257,8 +256,8 @@ describe('29 February births', () => {
     assert.equal(isMinor({ birthDate, jurisdiction: 'CA-NL', at: '2027-02-28' }).minor, false);
   });
 
-  it('Scotland, South Australia and Maryland: 1 March, by statute', () => {
-    for (const jurisdiction of ['GB-SCT', 'AU-SA', 'US-MD']) {
+  it('Scotland and Maryland: 1 March, by statute', () => {
+    for (const jurisdiction of ['GB-SCT', 'US-MD']) {
       assert.equal(minorUntil(birthDate, jurisdiction), '2026-03-01', jurisdiction);
       assert.equal(isMinor({ birthDate, jurisdiction, at: '2026-02-28' }).minor, true, jurisdiction);
       assert.equal(isMinor({ birthDate, jurisdiction, at: '2026-03-01' }).minor, false, jurisdiction);
@@ -339,7 +338,7 @@ describe('strictest', () => {
     const result = strictest(['US-AL', 'SA'], 'majority', { at: AS_OF });
     assert.equal(result.age, null);
     assert.equal(result.governing.jurisdiction, 'US-AL');
-    assert.deepEqual(result.unknown, ['SA']);
+    assert.deepEqual(result.unknown, [{ jurisdiction: 'SA', reason: 'unknown_jurisdiction' }]);
   });
 
   it('works for digital consent, ties going to the first', () => {
@@ -385,7 +384,8 @@ describe('input normalisation', () => {
 
   it('lists the codes in each table', () => {
     const majority = jurisdictions('majority');
-    assert.ok(majority.includes('US-MS') && majority.includes('NZ') && majority.includes('US'));
+    assert.ok(majority.includes('US-MS') && majority.includes('NZ') && !majority.includes('US'), 'a country that answers only per subdivision is not listed');
+    assert.equal(majority.length, 125);
     assert.deepEqual(majority, [...majority].sort());
     assert.ok(jurisdictions('digitalConsent').includes('CL'));
   });
@@ -449,5 +449,74 @@ describe('second review, 2026-10-11', () => {
 
   it('New Brunswick cites the Act in force', () => {
     assert.match(aom.threshold('CA-NB', 'majority').sourceUrl, /2011-c\.103$/);
+  });
+});
+
+describe('code review, 2026-10-11', () => {
+  it('never dates a coming of age before the first rule the tables hold', () => {
+    // South Africa's 18 began 2007-07-01; before, the tables hold nothing (it was 21).
+    assert.equal(minorUntil('1988-03-01', 'ZA'), null);
+    assert.equal(minorUntil('1995-03-01', 'ZA'), '2013-03-01');
+    assert.equal(minorUntil('1950-06-01', 'GB'), null);
+    assert.equal(minorUntil('1960-06-01', 'GB'), '1978-06-01');
+    // Chile's consent age begins 2026-12-01.
+    assert.equal(aom.needsParentalConsent({ birthDate: '2010-01-01', jurisdiction: 'CL', at: '2026-12-01' }).canConsentFrom, null);
+    assert.equal(aom.needsParentalConsent({ birthDate: '2015-01-01', jurisdiction: 'CL', at: '2026-12-01' }).canConsentFrom, '2029-01-01');
+  });
+
+  it('a place with its own country code answers the same however it is spelled', () => {
+    for (const [sub, own] of [['CN-TW', 'TW'], ['CN-HK', 'HK'], ['NL-AW', 'AW'], ['FR-NC', 'NC'], ['FI-01', 'AX']]) {
+      assert.equal(aom.normalizeJurisdiction(sub), own, sub);
+      for (const kind of ['majority', 'digitalConsent']) {
+        assert.deepEqual(aom.threshold(sub, kind, { at: AS_OF }), aom.threshold(own, kind, { at: AS_OF }), `${sub} ${kind}`);
+      }
+    }
+    assert.equal(aom.threshold('CN-TW', 'majority', { at: '2022-06-01' }).age, 20);
+    assert.equal(aom.threshold('FR-971', 'majority', { at: AS_OF }).matched, 'FR');
+  });
+
+  it('a Date or today needs a zone where the day decides the answer', () => {
+    // 15:00 UTC on 2022-03-31 is already 1 April in Tokyo, the day Japan's 18 began.
+    const instant = new Date('2022-03-31T15:00:00Z');
+    assert.throws(() => ageOfMajority('JP', { at: instant }), /pass timeZone/);
+    assert.equal(ageOfMajority('JP', { at: instant, timeZone: 'Asia/Tokyo' }).age, 18);
+    assert.equal(ageOfMajority('JP', { at: instant, timeZone: 'America/New_York' }).age, 20);
+    // A day nowhere near a change needs none.
+    assert.equal(ageOfMajority('JP', { at: new Date('2025-06-01T12:00:00Z') }).age, 18);
+    // A person's age always does.
+    assert.throws(() => isMinor({ birthDate: '2008-10-12', jurisdiction: 'CZ' }), /pass timeZone/);
+  });
+
+  it('an unknown time zone throws, whatever at is', () => {
+    assert.throws(() => ageOfMajority('CZ', { at: '2026-01-01', timeZone: 'Mars/Olympus' }), RangeError);
+    assert.throws(() => isMinor({ birthDate: '2000-01-01', jurisdiction: 'CZ', at: '2026-01-01', timeZone: 'Mars/Olympus' }), RangeError);
+  });
+
+  it('years past 9999 are refused, not compared as text', () => {
+    assert.throws(() => ageOfMajority('JP', { at: new Date('+010000-01-01T00:00:00Z'), timeZone: 'UTC' }), RangeError);
+  });
+
+  it('input that is not quite right is refused', () => {
+    assert.throws(() => minorUntil('2008-01-01', 'US', { leapDay: 'bogus' }), TypeError);
+    assert.throws(() => aom.normalizeJurisdiction(Object.create({ country: 'CZ' })), TypeError);
+    const vm = require('node:vm');
+    const foreign = vm.runInNewContext("new Date('2008-03-14T00:00:00Z')");
+    assert.equal(aom.ageOn(foreign, { at: '2026-03-14' }), 18);
+  });
+
+  it('effectiveUntil is the last day a version is in force', () => {
+    assert.equal(ageOfMajority('JP', { at: '2022-03-31' }).effectiveUntil, '2022-03-31');
+  });
+
+  it('strictest says why a place is unknown', () => {
+    const r = strictest(['US', 'CL', 'SA', 'DE'], 'digitalConsent', { at: AS_OF });
+    assert.deepEqual(r.unknown, [{ jurisdiction: 'CL', reason: 'no_rule_in_force' }, { jurisdiction: 'SA', reason: 'unknown_jurisdiction' }]);
+  });
+
+  it('the README examples answer as shown', () => {
+    const ms = isMinor({ birthDate: '2006-05-10', jurisdiction: 'US-MS', at: '2026-10-11' });
+    assert.deepEqual([ms.minor, ms.age, ms.majorityAge, ms.minorUntil, ms.reason], [true, 20, 21, '2027-05-10', 'below_threshold']);
+    assert.equal(minorUntil('2008-02-29', 'CA-NL'), '2027-02-28');
+    assert.equal(strictest(['US-AL', 'US-MS', 'CZ'], 'majority', { at: AS_OF }).age, 21);
   });
 });

@@ -24,6 +24,8 @@
  *   note           what a reader of the citation alone would get wrong
  *   leapDay        set only where a statute says how a 29 February birth is
  *                  anniversaried in a common year
+ *   attainment     set only where a statute attains an age the day before the
+ *                  anniversary ('dayBefore'); none does today
  *
  * A place is in a table only when its age AND a linkable citation were found.
  * Everything else is absent, and the lookup answers null: an unknown place is

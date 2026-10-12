@@ -35,8 +35,15 @@ export type AttainmentRule = 'anniversary' | 'dayBefore';
  */
 export type JurisdictionInput = string | { country: string; subdivision?: string | null };
 
-/** A date: 'YYYY-MM-DD' (preferred), or a Date read on `timeZone`'s calendar. */
-export type DateInput = string | Date;
+/** A birth date: 'YYYY-MM-DD' (preferred), or a Date at exactly midnight UTC. */
+export type BirthDateInput = string | Date;
+/**
+ * The date to evaluate on: 'YYYY-MM-DD' (taken as given), or a Date read on
+ * `timeZone`'s calendar. Omitted, today on `timeZone`'s calendar. A Date or
+ * today needs `timeZone` for a person; a threshold lookup needs it only when
+ * the instant falls on a day the rule changes somewhere on Earth.
+ */
+export type AtInput = string | Date;
 
 /** One version of a rule, as stored in the tables. */
 export interface RuleVersion {
@@ -74,7 +81,7 @@ export interface Threshold {
   /** The entry that answered: the place itself, its country, or the country governing it. */
   readonly matched: string;
   readonly effectiveFrom: string | null;
-  /** The first day of the next version; null while this one is current. */
+  /** The last day this version is in force (the day before the next); null while it is current. */
   readonly effectiveUntil: string | null;
   readonly citation: string;
   readonly sourceUrl: string;
@@ -84,7 +91,7 @@ export interface Threshold {
 
 export interface LookupOptions {
   /** Evaluation date. Default: today on `timeZone`'s calendar. */
-  at?: DateInput;
+  at?: AtInput;
   /** IANA zone used to read a Date `at` (or today) as a calendar date. Default 'UTC'. */
   timeZone?: string;
 }
@@ -96,7 +103,7 @@ export interface RuleOptions {
 
 export interface PersonArgs extends LookupOptions, RuleOptions {
   /** 'YYYY-MM-DD', or a Date at exactly midnight UTC. */
-  birthDate: DateInput;
+  birthDate: BirthDateInput;
   jurisdiction: JurisdictionInput;
 }
 
@@ -106,7 +113,11 @@ export interface MinorResult {
   /** Completed years on `at`. */
   readonly age: number;
   readonly majorityAge: number | null;
-  /** 'YYYY-MM-DD': the first day the person is no longer a minor. */
+  /**
+   * 'YYYY-MM-DD': the first day the person is no longer a minor and stays so under every later rule
+   * in the tables. null when the tables hold no answer, or the person attained the age before the first
+   * rule they record (when they really came of age is then unknown).
+   */
   readonly minorUntil: string | null;
   readonly reason: Reason;
   readonly jurisdiction: string;
@@ -120,7 +131,12 @@ export interface ParentalConsentResult {
   readonly required: boolean | null;
   readonly age: number;
   readonly consentAge: number | null;
-  /** 'YYYY-MM-DD': the first day the person may consent on their own. */
+  /**
+   * 'YYYY-MM-DD': the first day from which the person may consent on their own
+   * and keeps that under every later rule in the tables. null when the tables
+   * hold no answer, or the person attained the age before the first rule they
+   * record (when they really could is then unknown).
+   */
   readonly canConsentFrom: string | null;
   readonly reason: Reason;
   readonly jurisdiction: string;
@@ -134,8 +150,8 @@ export interface StrictestResult {
   readonly age: number | null;
   /** The strictest of the known jurisdictions (first on a tie), or null if none is known. */
   readonly governing: Threshold | null;
-  /** Canonical codes the tables hold no answer for. */
-  readonly unknown: ReadonlyArray<string>;
+  /** The places the tables hold no answer for, and why. */
+  readonly unknown: ReadonlyArray<{ readonly jurisdiction: string; readonly reason: Reason }>;
   /** One result per input, in order. */
   readonly results: ReadonlyArray<Threshold | null>;
 }
@@ -145,14 +161,15 @@ export declare function digitalConsentAge(jurisdiction: JurisdictionInput, optio
 export declare function threshold(jurisdiction: JurisdictionInput, kind: Kind, options?: LookupOptions): Threshold | null;
 export declare function isMinor(args: PersonArgs): MinorResult;
 export declare function needsParentalConsent(args: PersonArgs): ParentalConsentResult;
-export declare function minorUntil(birthDate: DateInput, jurisdiction: JurisdictionInput, options?: RuleOptions): string | null;
-export declare function ageOn(birthDate: DateInput, options?: LookupOptions & RuleOptions): number;
+export declare function minorUntil(birthDate: BirthDateInput, jurisdiction: JurisdictionInput, options?: RuleOptions): string | null;
+export declare function ageOn(birthDate: BirthDateInput, options?: LookupOptions & RuleOptions): number;
 export declare function strictest(
   jurisdictions: ReadonlyArray<JurisdictionInput>,
   kind: Kind,
   options?: LookupOptions,
 ): StrictestResult;
 export declare function normalizeJurisdiction(jurisdiction: JurisdictionInput): string;
+/** Every code with an answer of its own in a table; a country that answers only per subdivision ('US' for majority) is not listed. */
 export declare function jurisdictions(kind: Kind): string[];
 
 export declare const MAJORITY: Readonly<Record<string, Entry>>;
