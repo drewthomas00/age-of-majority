@@ -125,8 +125,8 @@ const US_STATES = {
     age: 21,
     citation: 'Miss. Code § 1-3-27',
     sourceUrl: 'https://billstatus.ls.state.ms.us/documents/2024/pdf/SB/2200-2299/SB2255IN.pdf',
-    confidence: 'high',
-    note: 'A person of 18 may enter contracts (§ 93-19-13), but is a minor until 21.',
+    confidence: 'medium',
+    note: 'A person of 18 may enter contracts (§ 93-19-13), but is a minor until 21. No stable official link to the code text was found; the link is 2024 SB 2255 as introduced, which quotes § 1-3-27 in force and proposed lowering the age to 18. That bill died, as did 2026 HB 277.',
   },
   'US-MO': { age: 18, citation: 'Mo. Rev. Stat. § 431.055', sourceUrl: 'https://revisor.mo.gov/main/OneSection.aspx?section=431.055', confidence: 'high', note: 'In force from 1975-01-07.' },
   'US-MT': {
@@ -200,8 +200,8 @@ const US_STATES = {
     age: 21,
     citation: 'Código Civil de Puerto Rico (2020), art. 97',
     sourceUrl: 'https://www.lexjuris.com/lexlex/Leyes2020/lexl2020055b.pdf',
-    confidence: 'high',
-    note: 'The 2020 Civil Code, in force from 2020-11-28, kept majority at 21.',
+    confidence: 'medium',
+    note: 'The 2020 Civil Code, in force from 2020-11-28, kept majority at 21. Read in an unofficial compilation.',
   },
 };
 
@@ -432,16 +432,16 @@ const REST_OF_WORLD = {
       sourceUrl: 'https://elaw.klri.re.kr/kor_service/lawViewMultiContent.do?hseq=29453',
       confidence: 'medium',
       leapDay: 'mar1',
-      note: 'Art. 160 (as in Japan): the day of birth counts, so an age is attained at the first instant of the anniversary, and of 1 March for a 29 February birth in a common year.',
+      note: 'Art. 158 (as in Japan): the day of birth counts, so an age is attained at the first instant of the anniversary; art. 160(3) makes it 1 March for a 29 February birth in a common year.',
     },
     {
       age: 19,
       effectiveFrom: '2013-07-01',
       citation: 'Civil Act, art. 4',
       sourceUrl: 'https://elaw.klri.re.kr/kor_service/lawViewMultiContent.do?hseq=29453',
-      confidence: 'medium',
+      confidence: 'high',
       leapDay: 'mar1',
-      note: 'Lowered from 20, in force 2013-07-01 (date from a secondary source). Art. 160: an age is attained at the first instant of the anniversary, and of 1 March for a 29 February birth in a common year.',
+      note: 'Lowered from 20 by Act No. 10429 of 2011-03-07, in force 2013-07-01 (Addenda, art. 1). Arts. 158 and 160(3): an age is attained at the first instant of the anniversary, and of 1 March for a 29 February birth in a common year.',
     },
   ],
   TW: [
@@ -458,9 +458,9 @@ const REST_OF_WORLD = {
       effectiveFrom: '2023-01-01',
       citation: 'Civil Code, art. 12',
       sourceUrl: 'https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=12',
-      confidence: 'medium',
+      confidence: 'high',
       leapDay: 'mar1',
-      note: 'Lowered from 20, in force 2023-01-01 (date from a secondary source). Arts. 121 and 124: an age is attained at the first instant of the anniversary, and of 1 March for a 29 February birth in a common year.',
+      note: 'Lowered from 20, in force 2023-01-01 (Enforcement Act of the General Principles of the Civil Code, art. 3-1: https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000002&flno=3-1). Arts. 121 and 124: an age is attained at the first instant of the anniversary, and of 1 March for a 29 February birth in a common year.',
     },
   ],
   CN: { age: 18, citation: 'Civil Code of the PRC, art. 17', sourceUrl: 'https://www.court.gov.cn/zixun/xiangqing/233181.html', confidence: 'medium' },
@@ -471,7 +471,7 @@ const REST_OF_WORLD = {
     confidence: 'medium',
     note: 's. 3(2): an age is attained at the start of the anniversary.',
   },
-  TH: { age: 20, citation: 'Civil and Commercial Code, s. 19', sourceUrl: 'https://www.thailawonline.com/thai-civil-code/section-20/', confidence: 'medium' },
+  TH: { age: 20, citation: 'Civil and Commercial Code, s. 19', sourceUrl: 'https://www.thailawonline.com/thai-civil-code/section-19/', confidence: 'medium', note: 'Read in an unofficial English translation.' },
   PH: {
     age: 18,
     citation: 'Family Code, art. 234, as amended by Republic Act No. 6809',
@@ -488,7 +488,7 @@ const REST_OF_WORLD = {
     note: 'The rule extending minority to 21 for a person under a court-appointed guardian was removed with effect from 1999-12-16.',
   },
   TR: { age: 18, citation: 'Türk Medeni Kanunu (Civil Code) No. 4721, art. 11', sourceUrl: 'https://www.tkgm.gov.tr/sites/default/files/2020-10/7_4721_sayili_turk_medeni_kanunu.pdf', confidence: 'medium' },
-  EG: { age: 21, citation: 'Civil Code, art. 44', sourceUrl: 'https://hrlibrary.law.umn.edu/research/Egypt/Civil%20Law.pdf', confidence: 'high', note: 'Counted in Gregorian years.' },
+  EG: { age: 21, citation: 'Civil Code, art. 44', sourceUrl: 'https://hrlibrary.law.umn.edu/research/Egypt/Civil%20Law.pdf', confidence: 'medium', note: 'Counted in Gregorian years. Read in an unofficial English translation.' },
   ZA: {
     age: 18,
     effectiveFrom: '2007-07-01',
@@ -501,10 +501,9 @@ const REST_OF_WORLD = {
   BR: [
     {
       age: 21,
-      citation: 'Código Civil de 1916, as in force until 2003-01-10',
-      sourceUrl: 'https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm',
+      citation: 'Código Civil de 1916 (Lei 3.071/1916), art. 9, as in force until 2003-01-10',
+      sourceUrl: 'https://www.planalto.gov.br/ccivil_03/leis/l3071.htm',
       confidence: 'high',
-      note: 'The link is to the 2002 Civil Code that replaced it.',
     },
     {
       age: 18,
@@ -515,7 +514,7 @@ const REST_OF_WORLD = {
       note: 'Lowered from 21 when the 2002 Civil Code took effect.',
     },
   ],
-  AR: { age: 18, citation: 'Código Civil y Comercial de la Nación, art. 25 (Ley 26.579)', sourceUrl: 'https://www.colegio-escribanos.org.ar/noticias/2009-12-22_Ley_26579.pdf', confidence: 'medium', note: 'Set at 18 by Ley 26.579 (December 2009).' },
+  AR: { age: 18, citation: 'Código Civil y Comercial de la Nación, art. 25 (Ley 26.994)', sourceUrl: 'https://www.colegio-escribanos.org.ar/noticias/2009-12-22_Ley_26579.pdf', confidence: 'medium', note: 'Lowered to 18 by Ley 26.579 (December 2009), which the link reproduces; the Civil and Commercial Code of 2015 (Ley 26.994) keeps 18 in art. 25.' },
   UY: {
     age: 18,
     effectiveFrom: '1995-10-19',
@@ -554,17 +553,17 @@ const DIGITAL_CONSENT = {
     age: 13,
     effectiveFrom: '2000-04-21',
     citation: "Children's Online Privacy Protection Act, 15 U.S.C. § 6501(1); 16 CFR § 312.2",
-    sourceUrl: 'https://www.law.cornell.edu/uscode/text/15/6501',
+    sourceUrl: 'https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title15-section6501&num=0&edition=prelim',
     confidence: 'high',
     note: 'COPPA: an operator needs verifiable parental consent to collect personal information from a child under 13. It applies in every state, DC and the territories. The 2025 amendments to the Rule keep 13. State laws that restrict particular uses (targeted advertising, sale, profiling) for older minors are purpose-specific and not encoded.',
   },
   'CA-QC': {
     age: 14,
-    effectiveFrom: '2022-09-22',
+    effectiveFrom: '2023-09-22',
     citation: 'Act respecting the protection of personal information in the private sector, CQLR c. P-39.1, ss. 4.1, 14',
     sourceUrl: 'https://www.legisquebec.gouv.qc.ca/en/document/cs/P-39.1',
-    confidence: 'medium',
-    note: 'Under 14, consent is given by the person having parental authority. The in-force date rests on a secondary source.',
+    confidence: 'high',
+    note: 'Under 14, consent is given by the person having parental authority. In force 2023-09-22: S.Q. 2021, c. 25 (Law 25), ss. 104, 110 and 175 (https://www.publicationsduquebec.gouv.qc.ca/fileadmin/Fichiers_client/lois_et_reglements/LoisAnnuelles/en/2021/2021C25A.PDF).',
   },
   BR: {
     age: 12,
@@ -611,7 +610,7 @@ const DIGITAL_CONSENT = {
     citation: 'Ley 19.628 as amended by Ley 21.719, art. 16 quáter',
     sourceUrl: 'https://www.bcn.cl/leychile/navegar?idNorma=1209272',
     confidence: 'high',
-    note: 'In force from 2026-12-01. Before then no statutory consent age is recorded.',
+    note: 'In force from 2026-12-01. Before then no statutory consent age is recorded. Processing the sensitive data of an adolescent under 16 still needs a parent\'s consent.',
   },
 
   // GDPR Art. 8: 16 unless a member state sets a lower age, not below 13.
@@ -673,8 +672,8 @@ const DIGITAL_CONSENT = {
     {
       age: 13,
       effectiveFrom: GDPR_START,
-      citation: 'Databeskyttelsesloven § 6, stk. 2',
-      sourceUrl: 'https://www.retsinformation.dk/eli/lta/2024/289',
+      citation: 'Databeskyttelsesloven (Lov nr. 502 of 2018) § 6, stk. 2',
+      sourceUrl: 'https://www.retsinformation.dk/eli/lta/2018/502',
       confidence: 'high',
     },
     {
@@ -683,7 +682,7 @@ const DIGITAL_CONSENT = {
       citation: 'Databeskyttelsesloven § 6, stk. 2–3, as amended by Lov nr. 1783 of 2023 (LBK nr. 289 of 2024)',
       sourceUrl: 'https://www.retsinformation.dk/eli/lta/2024/289',
       confidence: 'high',
-      note: 'Raised from 13. Confirmed by the Ministry of Justice: https://justitsministeriet.dk/nyhedsbrev/nyhedsbrev-af-5-januar-2024',
+      note: 'Raised from 13 by Lov nr. 1783 of 2023-12-28, in force 2024-01-01.',
     },
   ],
   EE: [
@@ -714,7 +713,7 @@ const DIGITAL_CONSENT = {
       citation: 'Loi n° 78-17 du 6 janvier 1978, art. 45',
       sourceUrl: 'https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000037823135',
       confidence: 'high',
-      note: 'Under 15, consent must be given jointly by the minor and the holder of parental authority.',
+      note: 'Under 15, consent must be given jointly by the minor and the holder of parental authority. Art. 7-1 until 2019-05-31 (inserted by Loi n° 2018-493), renumbered art. 45 by Ordonnance n° 2018-1125.',
     },
   ],
   DE: gdprNoDerogation(

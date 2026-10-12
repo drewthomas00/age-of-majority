@@ -424,3 +424,16 @@ describe('ESM consumers', () => {
     }
   });
 });
+
+describe('review fixes, 2026-10-11', () => {
+  it('Québec\'s consent age of 14 starts with Law 25 on 2023-09-22, not a year earlier', () => {
+    assert.equal(aom.threshold('CA-QC', 'digitalConsent', { at: '2023-09-21' }), null);
+    assert.equal(aom.threshold('CA-QC', 'digitalConsent', { at: '2023-09-22' }).age, 14);
+  });
+
+  it('each Danish version links the Act in force for it', () => {
+    const [before, after] = aom.DIGITAL_CONSENT.DK.versions;
+    assert.match(before.sourceUrl, /\/2018\/502$/);
+    assert.match(after.sourceUrl, /\/2024\/289$/);
+  });
+});

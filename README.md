@@ -51,8 +51,8 @@ isMinor({ birthDate: '2006-05-10', jurisdiction: 'US-MS', at: '2026-10-11' });
 //     effectiveFrom: null, effectiveUntil: null,
 //     citation: 'Miss. Code § 1-3-27',
 //     sourceUrl: 'https://billstatus.ls.state.ms.us/...',
-//     confidence: 'high',
-//     note: 'A person of 18 may enter contracts (§ 93-19-13), but is a minor until 21.'
+//     confidence: 'medium',
+//     note: 'A person of 18 may enter contracts (§ 93-19-13), but is a minor until 21. …'
 //   }
 // }
 ```
@@ -131,8 +131,8 @@ As of **2026-10-11** (`AS_OF`). Counts are entries with an answer of their own; 
 
 | Table | Entries | `high` | `medium` |
 |---|---|---|---|
-| `majority` | 125 | 90 | 35 |
-| `digitalConsent` | 39 | 31 | 8 |
+| `majority` | 125 | 89 | 36 |
+| `digitalConsent` | 39 | 32 | 7 |
 
 **Majority** — all 50 US states and DC, Puerto Rico; all 13 Canadian provinces and territories; all 8 Australian states and territories; the UK (GB, and GB-ENG, GB-WLS, GB-SCT, GB-NIR); 25 EU states, Iceland, Liechtenstein, Norway and Switzerland; New Zealand, Mexico (federal), Japan, Korea, Taiwan, China, Malaysia, Thailand, the Philippines, Vietnam, India, Türkiye, Egypt, South Africa, Kenya, Brazil, Argentina and Uruguay.
 
@@ -144,7 +144,7 @@ Not 18:
 | 20 | New Zealand, Thailand; Japan before 2022-04-01, Taiwan before 2023-01-01 |
 | 21 | Mississippi, Puerto Rico, Egypt; Brazil before 2003-01-11 |
 
-**Digital consent** — the United States (13, COPPA, which also answers for every state and territory); all 27 EU states, Iceland, Liechtenstein, Norway and the UK, each with its GDPR history; Québec (14), China (14), South Korea (14), Brazil (12), South Africa (18), Colombia (18), and Chile (14 from 2026-12-01).
+**Digital consent** — the United States (13, COPPA, which also answers for every state and territory); all 27 EU states, Iceland, Liechtenstein, Norway and the UK, each with its GDPR history; Québec (14 from 2023-09-22), China (14), South Korea (14), Brazil (12), South Africa (18), Colombia (18), and Chile (14 from 2026-12-01).
 
 ### What is absent, and why
 
@@ -178,7 +178,7 @@ The default is 1 March because 28 February has to *end* before someone born on t
 
 ## Not legal advice
 
-These tables were compiled with AI-assisted research against the linked sources on the date in `AS_OF`. **They have not been reviewed by a lawyer.** `confidence: 'high'` means the age was read in the primary text (or an official source for the text and its date); `'medium'` means an official or reputable secondary source, or a primary text whose in-force date or article number rests on one. Read the `note`.
+These tables were compiled with AI-assisted research against the linked sources on the date in `AS_OF` (see [Authorship](#authorship)). **They have not been reviewed by a lawyer.** `confidence: 'high'` means the age was read in the primary text (or an official source for the text and its date); `'medium'` means an official or reputable secondary source, or a primary text whose in-force date or article number rests on one. Read the `note`.
 
 The tables are **not a claim of completeness**, and laws change.
 
@@ -203,10 +203,15 @@ npm test
 
 Node's built-in test runner, no framework. CI runs the suite on Node 18–24 and again under a non-UTC `TZ`.
 
+## Authorship
+
+This package was written by [Claude](https://www.anthropic.com/claude) (Claude Opus 5.5, Anthropic's AI model), working in Claude Code at the direction of Drew Thomas. Claude wrote the code and the tests and did the research behind the tables. Drew decided what the package should do, and publishes and maintains it. Commits that Claude wrote say so in a `Co-Authored-By` trailer.
+
 ## Related packages
 
 Small, dependency-light pieces pulled out of production systems I've built:
 
+- **[youth-employment-rules](https://github.com/drewthomas00/youth-employment-rules)** — may a 15-year-old work this shift here? US federal and state child labor hours, with a schedule checker
 - **[tcpa-quiet-hours](https://github.com/drewthomas00/tcpa-quiet-hours)** — is it legal to send this marketing message right now, in the recipient's local time
 - **[twilio-signature-verify](https://github.com/drewthomas00/twilio-signature-verify)** — verify `X-Twilio-Signature`, including behind a reverse proxy
 - **[pg-cron-lease](https://github.com/drewthomas00/pg-cron-lease)** — make an in-process cron job a singleton across replicas, using Postgres
