@@ -211,6 +211,7 @@ This package was written by [Claude](https://www.anthropic.com/claude) (Claude O
 
 Small, dependency-light pieces pulled out of production systems I've built:
 
+- **[work-break-rules](https://github.com/drewthomas00/work-break-rules)** — does this shift give the meal and rest breaks the law requires? US states and DC, for adult employees
 - **[youth-employment-rules](https://github.com/drewthomas00/youth-employment-rules)** — may a 15-year-old work this shift here? US federal and state child labor hours, with a schedule checker
 - **[tcpa-quiet-hours](https://github.com/drewthomas00/tcpa-quiet-hours)** — is it legal to send this marketing message right now, in the recipient's local time
 - **[twilio-signature-verify](https://github.com/drewthomas00/twilio-signature-verify)** — verify `X-Twilio-Signature`, including behind a reverse proxy
